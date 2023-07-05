@@ -1,5 +1,9 @@
 package ada.tech;
 
+import ada.tech.service.StockService;
+
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Scanner;
 
 public class Main {
@@ -7,10 +11,15 @@ public class Main {
         System.out.println("Projeto - Módulo 2 Ada");
         System.out.println("Aluno: Arthur Pendragon de Simone");
         System.out.println("=========================INICIO===============================");
-        printConsole();
+        try {
+            printConsole();
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("==========================FIM=================================");
     }
-    public static void printConsole(){
+    public static void printConsole() throws IOException, ParseException {
+        StockService service = new StockService();
         boolean continueScan = true;
         Scanner scanner = new Scanner(System.in);
         while(continueScan){
@@ -20,12 +29,14 @@ public class Main {
                 case 1:
                     System.out.println("Digite o nome (ticker) da ação: Exemplo PETR3.SA");
                     String stock = scanner.next();
-                    System.out.println(stock);
+                    service.downloadStock(stock);
                     break;
                 case 2:
+
                     break;
                 default:
                     continueScan = false;
+                    scanner.close();
                     break;
             }
         }
