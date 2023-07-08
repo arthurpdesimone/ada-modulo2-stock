@@ -12,16 +12,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ada.tech.config.Configuration.API_KEY;
 import static ada.tech.config.Configuration.URL;
 
-public class StockService {
-    /**
-     * @param ticker The stock name
-     * @return List containing all the stocks
-     * */
-    public List<Stock> downloadStock(String ticker) throws IOException, ParseException {
+public class StockService implements StockInterface {
+
+    public List<Stock> downloadStock(String ticker) throws Exception {
         List<Stock> list = new LinkedList<>();
         String stockString = Utils.downloadToString(URL+"TIME_SERIES_DAILY_ADJUSTED&symbol="+ticker+"&outputsize=full&datatype=csv&apikey="+API_KEY);
 
@@ -41,6 +39,27 @@ public class StockService {
             list.add(stock);
         }
         timeSeries.close();
+        System.out.println("Ticker "+ticker+" registros: "+list.size());
         return list;
     }
+
+    public void listStocks(LinkedList<Stock> stocks){
+        for(Stock s : stocks){
+            System.out.println("Data : "+s.timestamp()+"\t Preço :"+s.close());
+        }
+    }
+
+    public void orderStocks(LinkedList<Stock> stocks){
+        stocks.sort(Stock::compareTo);
+    }
+
+    public List<Stock> removeDuplicateStocks(LinkedList<Stock> stocks){
+        System.out.println("Removendo duplicatas da lista de tamanho "+stocks.size());
+        List<Stock> newList = stocks.stream().distinct().toList();
+        LinkedList<Stock> stocksDuplicateRemoved = new LinkedList<>(newList);
+        System.out.println("Novo tamanho da lista  "+newList.size());
+        System.out.println("Duplicatas removidas  "+(stocks.size()-newList.size()));
+        return stocksDuplicateRemoved;
+    }
+
 }
